@@ -1,30 +1,177 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Scroll Reveal Cards</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: "Poppins", sans-serif;
+      overflow-x: hidden;
+      background: #fedcc8;
+      scroll-behavior: smooth;
+    }
+
+    /* --- Welcome Section --- */
+    .welcome {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(180deg, #ffc1cc 0%, #fff 100%);
+      position: relative;
+    }
+
+    .welcome h1 {
+      font-size: 4rem;
+      color: #2d112b;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- Scroll Icon --- */
+    .scroll-icon {
+      position: absolute;
+      bottom: 50px;
+      width: 30px;
+      height: 50px;
+      border: 2px solid #2d112b;
+      border-radius: 25px;
+      animation: bounce 2s infinite;
+    }
+
+    .scroll-icon::after {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      background: #2d112b;
+      border-radius: 50%;
+      margin: 8px auto;
+      animation: scrollDot 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+
+    @keyframes scrollDot {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(15px); }
+    }
+
+    /* --- Parallax Section --- */
+    .parallax {
+      perspective: 100px;
+      position: relative;
+      height: 200vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background: #2d112b;
+    }
+
+    .parallax__layer {
+      position: absolute;
+      inset: 0;
+    }
+
+    .parallax__layer__0 {
+      background: radial-gradient(circle at top, #ffb6c1, #2d112b);
+      transform: translateZ(-100px) scale(2);
+    }
+
+    .parallax__layer__1 {
+      background: url('https://cdn.jsdelivr.net/gh/daangn/web-assets/parallax-stars.png') repeat;
+      opacity: 0.4;
+      transform: translateZ(-50px) scale(1.5);
+    }
+
+    /* --- Card Grid --- */
+    .card-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 120vh auto 5rem auto;
+      padding: 2rem;
+      z-index: 5;
+    }
+
+    .card {
+      background: #fff;
+      padding: 2rem;
+      text-align: center;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      text-decoration: none;
+      color: #2d112b;
+      font-size: 1.2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+
+    .card.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* --- Optional hover effect --- */
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+    }
+  </style>
 </head>
 <body>
+
+  <!-- Welcome Section -->
   <section class="welcome">
     <h1>Welcome</h1>
     <div class="scroll-icon"></div>
   </section>
 
+  <!-- Parallax Section -->
   <section class="parallax">
     <div class="parallax__layer parallax__layer__0"></div>
     <div class="parallax__layer parallax__layer__1"></div>
     <div class="card-grid">
-      <a href="#" class="card">Card 1</a>
-      <a href="#" class="card">Card 2</a>
-      <a href="#" class="card">Card 3</a>
-      <a href="#" class="card">Card 4</a>
-      <a href="#" class="card">Card 5</a>
-      <a href="#" class="card">Card 6</a>
+      <a href="#" class="card">🌸 Card 1</a>
+      <a href="#" class="card">🌼 Card 2</a>
+      <a href="#" class="card">🍀 Card 3</a>
+      <a href="#" class="card">🌈 Card 4</a>
+      <a href="#" class="card">💎 Card 5</a>
+      <a href="#" class="card">🌙 Card 6</a>
     </div>
   </section>
 
-  <script src="script.js"></script>
+  <script>
+    const cards = document.querySelectorAll(".card");
+
+    window.addEventListener("scroll", () => {
+      const triggerBottom = window.innerHeight * 0.85;
+      cards.forEach(card => {
+        const cardTop = card.getBoundingClientRect().top;
+        if (cardTop < triggerBottom) {
+          card.classList.add("show");
+        }
+      });
+    });
+  </script>
+
 </body>
 </html>
