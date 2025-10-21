@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スクロールでページ切替</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    font-family: "メイリオ", sans-serif;
+  }
+
+  /* 最初のピンク画面 */
+  .intro {
+    height: 100vh; /* 画面いっぱい */
+    background: linear-gradient(135deg, #ffc0cb, #ffb6c1); /* ピンクのグラデーション */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 2em;
+    text-align: center;
+  }
+
+  /* 本ページ */
+  .main {
+    min-height: 100vh;
+    background: #fff;
+    padding: 50px;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    color: #ff69b4;
+  }
+  p {
+    color: #333;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<!-- 最初の画面 -->
+<div class="intro">
+  <div>
+    💖 Welcome! 下にスクロールしてね 💖
+  </div>
+</div>
+
+<!-- 本ページ -->
+<div class="main">
+  <h1>本ページのタイトル</h1>
+  <p>ここから本ページのコンテンツが始まります。<br>
+  色々な情報や画像、リンクなどを自由に置けます。</p>
+  <p>スクロールしてこのページに到達する感じが演出されています。</p>
+</div>
+
+</body>
+</html>
