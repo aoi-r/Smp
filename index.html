@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scroll Reveal Cards</title>
+  <title>Layer Scroll Cards</title>
   <style>
     * {
       box-sizing: border-box;
@@ -14,25 +14,57 @@
     html, body {
       height: 100%;
       font-family: "Poppins", "Noto Sans JP", sans-serif;
-      overflow-x: hidden;
-      scroll-behavior: smooth;
       background: #fff7f7;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
     }
 
-    /* --- Welcome Section --- */
-    .welcome {
+    /* スナップスクロール設定 */
+    body {
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+    }
+
+    section {
       height: 100vh;
+      width: 100%;
+      scroll-snap-align: start;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(180deg, #ffd5e3 0%, #fff7f7 100%);
+      flex-direction: column;
       position: relative;
+      transition: background 1s ease;
+    }
+
+    /* 背景のグラデーションアニメ */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 30%, #ffd6e8, transparent 70%),
+                  radial-gradient(circle at 70% 70%, #ffe6ef, transparent 70%);
+      background-size: 200% 200%;
+      animation: bgMove 12s ease-in-out infinite alternate;
+      z-index: -1;
+    }
+
+    @keyframes bgMove {
+      from { background-position: 0% 0%; }
+      to { background-position: 100% 100%; }
+    }
+
+    /* Welcomeセクション */
+    .welcome {
+      background: linear-gradient(180deg, #ffd5e3 0%, #fff7f7 100%);
+      color: #b23a6f;
     }
 
     .welcome h1 {
       font-size: 3.5rem;
-      color: #b23a6f;
       letter-spacing: 2px;
       animation: fadeIn 2s ease-in-out;
     }
@@ -42,7 +74,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* --- Scroll Icon --- */
+    /* Scroll Icon */
     .scroll-icon {
       position: absolute;
       bottom: 40px;
@@ -74,28 +106,12 @@
       100% { opacity: 0; transform: translateY(15px); }
     }
 
-    /* --- Parallax Section --- */
-    .parallax {
-      perspective: 100px;
-      background: linear-gradient(180deg, #fff7f7 0%, #ffe3ec 100%);
-    }
-
-    .parallax__layer {
-      position: absolute;
-      inset: 0;
-    }
-
-    /* --- Card Section --- */
+    /* カード共通スタイル */
     .card-section {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      text-align: center;
+      background: #fff7f7;
       color: #b23a6f;
-      position: relative;
-      overflow: hidden;
+      text-align: center;
+      transition: background 1s;
     }
 
     .card {
@@ -131,26 +147,6 @@
       opacity: 0.7;
     }
 
-    /* --- Background animation (soft gradient move) --- */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 30% 30%, #ffd6e8, transparent 70%),
-                  radial-gradient(circle at 70% 70%, #ffe6ef, transparent 70%);
-      background-size: 200% 200%;
-      animation: bgMove 12s ease-in-out infinite alternate;
-      z-index: -1;
-    }
-
-    @keyframes bgMove {
-      from { background-position: 0% 0%; }
-      to { background-position: 100% 100%; }
-    }
-
   </style>
 </head>
 <body>
@@ -161,41 +157,41 @@
     <div class="scroll-icon"></div>
   </section>
 
-  <!-- Cards (1 per page scroll) -->
-  <section class="parallax">
-    <div class="card-section">
-      <a href="#" class="card">🌸 Card 1<br>春の香りを感じて</a>
-    </div>
-    <div class="card-section">
-      <a href="#" class="card">🌼 Card 2<br>明るく優しい午後</a>
-    </div>
-    <div class="card-section">
-      <a href="#" class="card">🍀 Card 3<br>新しい発見を求めて</a>
-    </div>
-    <div class="card-section">
-      <a href="#" class="card">🌈 Card 4<br>心をカラフルに</a>
-    </div>
-    <div class="card-section">
-      <a href="#" class="card">💎 Card 5<br>小さなきらめきを大切に</a>
-    </div>
-    <div class="card-section">
-      <a href="#" class="card">🌙 Card 6<br>やさしく夜に包まれて</a>
-    </div>
+  <!-- Cards (1 per layer) -->
+  <section class="card-section">
+    <a href="#" class="card">🌸 Card 1<br>春の香りを感じて</a>
+  </section>
+  <section class="card-section">
+    <a href="#" class="card">🌼 Card 2<br>明るく優しい午後</a>
+  </section>
+  <section class="card-section">
+    <a href="#" class="card">🍀 Card 3<br>新しい発見を求めて</a>
+  </section>
+  <section class="card-section">
+    <a href="#" class="card">🌈 Card 4<br>心をカラフルに</a>
+  </section>
+  <section class="card-section">
+    <a href="#" class="card">💎 Card 5<br>小さなきらめきを大切に</a>
+  </section>
+  <section class="card-section">
+    <a href="#" class="card">🌙 Card 6<br>やさしく夜に包まれて</a>
   </section>
 
   <script>
     const cards = document.querySelectorAll(".card");
 
-    window.addEventListener("scroll", () => {
-      const triggerBottom = window.innerHeight * 0.8;
+    function checkCards() {
+      const triggerBottom = window.innerHeight * 0.9;
       cards.forEach(card => {
-        const cardTop = card.getBoundingClientRect().top;
-        if (cardTop < triggerBottom) {
+        const top = card.getBoundingClientRect().top;
+        if (top < triggerBottom) {
           card.classList.add("show");
         }
       });
-    });
-  </script>
+    }
 
+    window.addEventListener("scroll", checkCards);
+    window.addEventListener("load", checkCards);
+  </script>
 </body>
 </html>
