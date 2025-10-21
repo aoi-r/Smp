@@ -3,59 +3,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スクロールでページ切替</title>
+<title>おしゃれスクロールページ</title>
 <style>
   body, html {
     margin: 0;
     padding: 0;
     font-family: "メイリオ", sans-serif;
+    scroll-behavior: smooth;
+    background-color: #fff;
   }
 
-  /* 最初のピンク画面 */
+  /* ピンクのスタート画面 */
   .intro {
-    height: 100vh; /* 画面いっぱい */
-    background: linear-gradient(135deg, #ffc0cb, #ffb6c1); /* ピンクのグラデーション */
+    height: 100vh;
+    background: linear-gradient(135deg, #ffc0cb, #ffb6c1);
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
     font-size: 2em;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ゆらゆら動くハート */
+  .heart {
+    position: absolute;
+    font-size: 1.5em;
+    animation: float 6s infinite ease-in-out;
+    opacity: 0.6;
+  }
+  @keyframes float {
+    0% { transform: translateY(0); opacity: 0.8; }
+    50% { transform: translateY(-20px); opacity: 1; }
+    100% { transform: translateY(0); opacity: 0.8; }
   }
 
   /* 本ページ */
   .main {
     min-height: 100vh;
     background: #fff;
-    padding: 50px;
+    padding: 60px;
     box-sizing: border-box;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1s ease-out;
+  }
+
+  /* 表示時のアニメーション */
+  .main.visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   h1 {
     color: #ff69b4;
+    font-size: 2em;
+    text-align: center;
   }
+
   p {
     color: #333;
-    line-height: 1.6;
+    line-height: 1.8;
+    text-align: center;
   }
 </style>
 </head>
 <body>
 
-<!-- 最初の画面 -->
+<!-- ピンクの背景部分 -->
 <div class="intro">
-  <div>
-    💖 Welcome! 下にスクロールしてね 💖
-  </div>
+  💖 Welcome! 下にスクロールしてね 💖
+  <div class="heart" style="top:20%; left:30%;">💗</div>
+  <div class="heart" style="top:60%; left:70%;">💞</div>
+  <div class="heart" style="top:40%; left:50%;">💖</div>
 </div>
 
-<!-- 本ページ -->
-<div class="main">
-  <h1>本ページのタイトル</h1>
-  <p>ここから本ページのコンテンツが始まります。<br>
-  色々な情報や画像、リンクなどを自由に置けます。</p>
-  <p>スクロールしてこのページに到達する感じが演出されています。</p>
+<!-- 本ページ部分 -->
+<div class="main" id="main">
+  <h1>本ページへようこそ</h1>
+  <p>スクロールでふわっと現れるおしゃれな演出です。</p>
+  <p>この部分に自由にテキストや画像を入れられます。</p>
 </div>
+
+<script>
+  // スクロールしてメインが画面内に入ったらアニメーション
+  const main = document.getElementById("main");
+  window.addEventListener("scroll", () => {
+    const rect = main.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    if (rect.top < windowHeight - 100) {
+      main.classList.add("visible");
+    }
+  });
+</script>
 
 </body>
 </html>
