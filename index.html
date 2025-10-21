@@ -1,103 +1,281 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>おしゃれスクロールページ</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>スクロールで現れるおしゃれページ</title>
 <style>
-  body, html {
-    margin: 0;
-    padding: 0;
-    font-family: "メイリオ", sans-serif;
-    scroll-behavior: smooth;
-    background-color: #fff;
+  :root{
+    --accent-1: #ff9ec5; /* ピンク */
+    --accent-2: #ffd6e7;
+    --accent-3: #fff0f8;
+    --text: #222;
+    --ease: cubic-bezier(.22,.9,.36,1);
   }
 
-  /* ピンクのスタート画面 */
-  .intro {
-    height: 100vh;
-    background: linear-gradient(135deg, #ffc0cb, #ffb6c1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 2em;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+  /* リセット */
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--accent-3);font-family: "Helvetica Neue", system-ui, -apple-system, "Yu Gothic", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;}
+
+  /* ページ全体レイアウト */
+  .page{
+    min-height:200vh; /* スクロール領域を確保 */
+    position:relative;
+    overflow-x:hidden;
   }
 
-  /* ゆらゆら動くハート */
-  .heart {
-    position: absolute;
-    font-size: 1.5em;
-    animation: float 6s infinite ease-in-out;
-    opacity: 0.6;
-  }
-  @keyframes float {
-    0% { transform: translateY(0); opacity: 0.8; }
-    50% { transform: translateY(-20px); opacity: 1; }
-    100% { transform: translateY(0); opacity: 0.8; }
-  }
-
-  /* 本ページ */
-  .main {
-    min-height: 100vh;
-    background: #fff;
-    padding: 60px;
-    box-sizing: border-box;
-    opacity: 0;
-    transform: translateY(50px);
-    transition: all 1s ease-out;
+  /* 背景レイヤー（ピンクの可愛い開始画面） */
+  .bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    display:grid;
+    align-items:center;
+    justify-items:center;
+    overflow:hidden;
   }
 
-  /* 表示時のアニメーション */
-  .main.visible {
-    opacity: 1;
-    transform: translateY(0);
+  /* グラデーション＋動く丸（ブロブ）でかわいく */
+  .bg::before{
+    content:'';
+    position:absolute;
+    inset:-20%;
+    background:
+      radial-gradient(1200px 600px at 10% 10%, rgba(255,158,197,0.55), transparent 20%),
+      radial-gradient(800px 600px at 90% 40%, rgba(255,214,235,0.6), transparent 20%),
+      linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    filter:blur(18px) saturate(120%);
+    transform-origin:center;
+    animation: slow-rotate 18s linear infinite;
+    z-index:0;
   }
 
-  h1 {
-    color: #ff69b4;
-    font-size: 2em;
-    text-align: center;
+  /* 透ける丸 (浮遊ブロブ) */
+  .blob{
+    position:absolute;
+    width:34vmin;
+    height:34vmin;
+    min-width:160px;
+    min-height:160px;
+    border-radius:50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6), rgba(255,255,255,0.08) 40%, transparent 60%);
+    mix-blend-mode:overlay;
+    filter:blur(6px);
+    opacity:.95;
+    animation: float 7s var(--ease) infinite;
+    z-index:1;
+  }
+  .blob.b2{width:26vmin;height:26vmin; left:10%; top:12%; animation-duration:9s; animation-delay:-2s;}
+  .blob.b1{right:8%; top:18%; animation-duration:8s; animation-delay:-1s;}
+  .blob.b3{left:18%; bottom:10%; width:30vmin;height:30vmin; animation-duration:11s; animation-delay:-3s;}
+
+  @keyframes float{
+    0%{transform:translateY(0) translateX(0) scale(1)}
+    50%{transform:translateY(-6%) translateX(4%) scale(1.03)}
+    100%{transform:translateY(0) translateX(0) scale(1)}
+  }
+  @keyframes slow-rotate{
+    0%{transform:rotate(0deg)}
+    100%{transform:rotate(360deg)}
   }
 
-  p {
-    color: #333;
-    line-height: 1.8;
-    text-align: center;
+  /* スタート画面の中央メッセージ */
+  .hero{
+    position:relative;
+    z-index:2;
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:2rem;
+    pointer-events:auto;
+  }
+  .hero-card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.7));
+    border-radius:20px;
+    padding:2rem 2.5rem;
+    box-shadow: 0 10px 30px rgba(34,34,34,0.08);
+    backdrop-filter: blur(6px) saturate(120%);
+    max-width:820px;
+    transform-origin:center;
+    transition:transform .6s var(--ease), opacity .6s var(--ease);
+  }
+  h1{font-size:clamp(1.4rem, 3.6vw, 2.4rem); margin-bottom:.4rem; color:#5a2235}
+  p.lead{margin-bottom:1rem; opacity:.95; color:#5a2235}
+
+  /* スクロールインジケーター */
+  .scroll-indicator{
+    position:absolute;
+    bottom:28px;
+    z-index:3;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:.6rem;
+    align-items:center;
+    font-size:.85rem;
+    color:rgba(0,0,0,0.45);
+    pointer-events:none;
+  }
+  .mouse{
+    width:24px;height:36px;border-radius:12px;border:2px solid rgba(0,0,0,0.2);display:flex;align-items:flex-start;justify-content:center;padding-top:5px;
+  }
+  .mouse-dot{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,0.25);animation:dot 1.6s infinite}
+  @keyframes dot{0%{opacity:0;transform:translateY(0)}50%{opacity:1;transform:translateY(6px)}100%{opacity:0;transform:translateY(0)}}
+
+  /* メインコンテンツ（下に現れる部分）*/
+  main{
+    position:relative;
+    z-index:4;
+    width:100%;
+    margin-top:-20vh; /* 少しヒーローと重ねる */
+    padding:clamp(3rem,6vw,6rem) 6vw;
+    display:flex;
+    justify-content:center;
+  }
+  .container{
+    max-width:1100px;
+    width:100%;
+  }
+
+  .card-grid{
+    display:grid;
+    gap:1.4rem;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  }
+  .card{
+    background:linear-gradient(180deg,rgba(255,255,255,1),rgba(255,247,249,0.9));
+    border-radius:14px;
+    padding:1.4rem;
+    box-shadow:0 8px 20px rgba(34,34,34,0.06);
+    transform: translateY(30px);
+    opacity:0;
+    transition: transform .7s var(--ease), opacity .7s var(--ease);
+  }
+
+  /* reveal クラスが付与されたら表示 */
+  .reveal .card{transform:translateY(0); opacity:1;}
+  .reveal .card:nth-child(1){transition-delay:.08s}
+  .reveal .card:nth-child(2){transition-delay:.16s}
+  .reveal .card:nth-child(3){transition-delay:.24s}
+  .reveal .card:nth-child(4){transition-delay:.32s}
+
+  /* 小さい画面調整 */
+  @media (max-width:600px){
+    .hero-card{padding:1.6rem;border-radius:14px}
+    .blob{display:none}
+    .bg::before{filter:blur(24px)}
   }
 </style>
 </head>
 <body>
+<div class="page">
 
-<!-- ピンクの背景部分 -->
-<div class="intro">
-  💖 Welcome! 下にスクロールしてね 💖
-  <div class="heart" style="top:20%; left:30%;">💗</div>
-  <div class="heart" style="top:60%; left:70%;">💞</div>
-  <div class="heart" style="top:40%; left:50%;">💖</div>
-</div>
+  <!-- 背景 -->
+  <div class="bg" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
 
-<!-- 本ページ部分 -->
-<div class="main" id="main">
-  <h1>本ページへようこそ</h1>
-  <p>スクロールでふわっと現れるおしゃれな演出です。</p>
-  <p>この部分に自由にテキストや画像を入れられます。</p>
+  <!-- ヒーロー / スタート画面 -->
+  <header class="hero" role="banner">
+    <div class="hero-card" id="heroCard">
+      <h1>ようこそ — ピンクの世界へ</h1>
+      <p class="lead">下にスクロールすると、背景アニメーションと共にメインページがやさしく出てきます。</p>
+      <p style="opacity:.85;font-size:.95rem">このデモはCSSアニメーション＋IntersectionObserverで実装されています。色やアニメーションの速さは簡単に変えられます。</p>
+    </div>
+
+    <div class="scroll-indicator" aria-hidden="true">
+      <div class="mouse"><span class="mouse-dot"></span></div>
+      <div>Scroll</div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main>
+    <div class="container" id="mainContent" aria-live="polite">
+      <h2 style="margin-bottom:1rem;color:#6b2a44">メインページ</h2>
+      <p style="margin-bottom:1.6rem; color:#4b2b34">ここからがメインコンテンツです。スクロールでフェード＆スライドして表示します。カードや画像、テキストを入れて自由にカスタマイズしてください。</p>
+
+      <div class="card-grid">
+        <article class="card">
+          <h3>セクションA</h3>
+          <p>簡単な説明文。ここに機能や紹介を書きます。レスポンシブ対応。</p>
+        </article>
+        <article class="card">
+          <h3>セクションB</h3>
+          <p>画像やリストを入れてもOK。アニメーションは遅延つきで順次出現します。</p>
+        </article>
+        <article class="card">
+          <h3>セクションC</h3>
+          <p>リンクやボタンを置いてインタラクティブに。アクセシビリティへも配慮。</p>
+        </article>
+        <article class="card">
+          <h3>セクションD</h3>
+          <p>カスタムカラーやブロブの大きさを変えれば雰囲気をガラッと変えられます。</p>
+        </article>
+      </div>
+    </div>
+  </main>
+
 </div>
 
 <script>
-  // スクロールしてメインが画面内に入ったらアニメーション
-  const main = document.getElementById("main");
-  window.addEventListener("scroll", () => {
-    const rect = main.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-    if (rect.top < windowHeight - 100) {
-      main.classList.add("visible");
+/*
+  IntersectionObserverで main の可視化を検出して .reveal を付与。
+  付与後はヒーローの要素を少し縮めて"切り替え感"を出す。
+*/
+(function(){
+  const main = document.getElementById('mainContent');
+  const heroCard = document.getElementById('heroCard');
+
+  // IntersectionObserver 設定
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // mainが画面に入ったら reveal クラスをつける
+        document.querySelector('.container').classList.add('reveal');
+        // ヒーローカードを少しスケールダウンして奥行きを演出
+        heroCard.style.transform = 'translateY(-6vh) scale(.98)';
+        heroCard.style.opacity = '.9';
+      } else {
+        // スクロール上に戻ったら元に戻す（任意の挙動）
+        document.querySelector('.container').classList.remove('reveal');
+        heroCard.style.transform = '';
+        heroCard.style.opacity = '1';
+      }
+    });
+  }, {
+    root: null,
+    threshold: 0.12 // 少し見えたら反応
+  });
+
+  io.observe(main);
+
+  // スクロールで背景の色味を変える小さな演出
+  window.addEventListener('scroll', ()=>{
+    const y = window.scrollY;
+    const ratio = Math.min(1, y / (window.innerHeight * 0.8));
+    // 背景フィルタの強さを変更
+    document.documentElement.style.setProperty('--bg-blend', `${0.4 + ratio*0.6}`);
+    // 透けブロブの位置に少しパララックス
+    document.querySelectorAll('.blob').forEach((b,i)=>{
+      const speed = 0.25 + i*0.12;
+      b.style.transform = `translateY(${ -y * speed * 0.02 }px)`;
+    });
+  }, {passive:true});
+
+  // keyboard accessibility: 下キー or space でスクロールしてメインへ
+  window.addEventListener('keydown', (e)=>{
+    if(e.key === ' ' || e.key === 'ArrowDown'){
+      e.preventDefault();
+      window.scrollTo({top: window.innerHeight * 0.95, behavior:'smooth'});
     }
   });
+})();
 </script>
-
 </body>
 </html>
