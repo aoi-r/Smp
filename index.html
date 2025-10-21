@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smooth Scroll Reveal Cards</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Single Card Scroll</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
+      height: 100%;
       font-family: "Poppins", "Noto Sans JP", sans-serif;
       background: #fff7f7;
       color: #b23a6f;
-      scroll-behavior: smooth;
       overflow-x: hidden;
+      scroll-behavior: smooth;
     }
 
-    /* 背景ふわっと */
+    /* 背景アニメーション */
     body::before {
       content: "";
       position: fixed;
@@ -37,7 +34,7 @@
       to { background-position: 100% 100%; }
     }
 
-    /* Welcome セクション */
+    /* Welcomeセクション */
     .welcome {
       height: 100vh;
       display: flex;
@@ -59,7 +56,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Scroll アイコン */
     .scroll-icon {
       position: absolute;
       bottom: 50px;
@@ -73,8 +69,7 @@
     .scroll-icon::after {
       content: '';
       display: block;
-      width: 6px;
-      height: 6px;
+      width: 6px; height: 6px;
       background: #b23a6f;
       border-radius: 50%;
       margin: 8px auto;
@@ -91,41 +86,33 @@
       100% { opacity: 0; transform: translateY(15px); }
     }
 
-    /* カード一覧 */
-    .card-section {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 4rem 1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3rem;
+    /* カードセクション */
+    .cards-wrapper {
+      position: relative;
+      height: 600vh; /* カード数に応じて長さを調整 */
     }
 
     .card {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       background: #fffafc;
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(178, 58, 111, 0.15);
-      padding: 3rem 2rem;
       width: 90%;
       max-width: 500px;
+      padding: 3rem 2rem;
       text-align: center;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       opacity: 0;
-      transform: translateY(30px);
-      transition: all 0.8s ease;
-      text-decoration: none;
-      color: #b23a6f;
+      transition: opacity 0.8s ease;
+      pointer-events: none;
     }
 
-    .card.show {
+    .card.active {
       opacity: 1;
-      transform: translateY(0);
-    }
-
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 25px rgba(178, 58, 111, 0.25);
+      pointer-events: all;
     }
 
     .card::after {
@@ -134,6 +121,11 @@
       margin-top: 1rem;
       font-size: 1.2rem;
       opacity: 0.7;
+    }
+
+    .card:hover {
+      transform: translate(-50%, -52%);
+      box-shadow: 0 12px 25px rgba(178, 58, 111, 0.25);
     }
   </style>
 </head>
@@ -145,28 +137,31 @@
     <div class="scroll-icon"></div>
   </section>
 
-  <!-- Card Section -->
-  <section class="card-section">
-    <a href="#" class="card">🌸 Card 1<br>春の香りを感じて</a>
-    <a href="#" class="card">🌼 Card 2<br>明るく優しい午後</a>
-    <a href="#" class="card">🍀 Card 3<br>新しい発見を求めて</a>
-    <a href="#" class="card">🌈 Card 4<br>心をカラフルに</a>
-    <a href="#" class="card">💎 Card 5<br>小さなきらめきを大切に</a>
-    <a href="#" class="card">🌙 Card 6<br>やさしく夜に包まれて</a>
-    <a href="#" class="card">🌙 Card 7<br>仕事したくないね</a>
-    <a href="#" class="card">🌙 Card 8<br>帰りたい</a>
-  </section>
+  <!-- Cards Wrapper -->
+  <div class="cards-wrapper">
+    <div class="card">🌸 Card 1<br>春の香りを感じて</div>
+    <div class="card">🌼 Card 2<br>明るく優しい午後</div>
+    <div class="card">🍀 Card 3<br>新しい発見を求めて</div>
+    <div class="card">🌈 Card 4<br>心をカラフルに</div>
+    <div class="card">💎 Card 5<br>小さなきらめきを大切に</div>
+    <div class="card">🌙 Card 6<br>やさしく夜に包まれて</div>
+  </div>
 
   <script>
-    const cards = document.querySelectorAll(".card");
+    const cards = document.querySelectorAll('.card');
+    const total = cards.length;
 
-    window.addEventListener("scroll", () => {
-      const triggerBottom = window.innerHeight * 0.85;
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      const sectionHeight = document.querySelector('.cards-wrapper').offsetHeight;
+      const progress = scrollY / sectionHeight;
+      const index = Math.floor(progress * total * 1.2); // スクロール量で切り替え調整
 
-      cards.forEach(card => {
-        const cardTop = card.getBoundingClientRect().top;
-        if (cardTop < triggerBottom) {
-          card.classList.add("show");
+      cards.forEach((card, i) => {
+        if (i === index) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
         }
       });
     });
