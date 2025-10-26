@@ -2,18 +2,20 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parallax Scroll Forest</title>
 <style>
 body {
   margin: 0;
-  height: 100vh;
+  font-family: sans-serif;
   overflow-x: hidden;
-  perspective: 300px;
 }
 
+/* --- パララックスセクション --- */
 .parallax {
   position: relative;
   height: 100vh;
-  transform-style: preserve-3d;
+  perspective: 300px;
   overflow: hidden;
 }
 
@@ -31,18 +33,7 @@ body {
   bottom: 0;
 }
 
-.parallax__cover {
-  background: #2D112B;
-  display: block;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  height: 2000px;
-  z-index: 2;
-}
-
-/* --- Sassの出力を手動展開 --- */
+/* --- 深度調整 --- */
 .parallax__layer__0 { transform: translateZ(-300px) scale(4); }
 .parallax__layer__1 { transform: translateZ(-250px) scale(3.5); }
 .parallax__layer__2 { transform: translateZ(-200px) scale(3); }
@@ -50,11 +41,38 @@ body {
 .parallax__layer__4 { transform: translateZ(-100px) scale(2); }
 .parallax__layer__5 { transform: translateZ(-50px) scale(1.5); }
 .parallax__layer__6 { transform: translateZ(0px) scale(1); }
+
+/* --- スクロール時のアニメーション効果 --- */
+.parallax {
+  position: relative;
+  height: 120vh;
+  transition: transform 0.6s ease-out, opacity 1s ease-out;
+}
+
+.parallax.fade-out {
+  transform: translateY(-30vh);
+  opacity: 0;
+}
+
+/* --- 下の本ページ部分 --- */
+.content {
+  background: #fff;
+  color: #333;
+  min-height: 200vh;
+  padding: 100px 20px;
+  text-align: center;
+}
+
+.content h1 {
+  font-size: 3em;
+  margin-bottom: 1em;
+}
 </style>
 </head>
 <body>
 
-<div class="parallax">
+<!-- 森のパララックス背景 -->
+<div class="parallax" id="forest">
   <div class="parallax__layer parallax__layer__0"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_0.png?raw=true" /></div>
   <div class="parallax__layer parallax__layer__1"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_1.png?raw=true" /></div>
   <div class="parallax__layer parallax__layer__2"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_2.png?raw=true" /></div>
@@ -62,8 +80,27 @@ body {
   <div class="parallax__layer parallax__layer__4"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_4.png?raw=true" /></div>
   <div class="parallax__layer parallax__layer__5"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_5.png?raw=true" /></div>
   <div class="parallax__layer parallax__layer__6"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_6.png?raw=true" /></div>
-  <div class="parallax__cover"></div>
 </div>
+
+<!-- メインページ内容 -->
+<div class="content">
+  <h1>森の向こうへようこそ</h1>
+  <p>ここから本ページのコンテンツが始まります。</p>
+  <p>スクロールで森が上に逃げて消え、下からページが出てきます。</p>
+</div>
+
+<script>
+// --- スクロール時にパララックスをフェードアウト ---
+const forest = document.getElementById("forest");
+window.addEventListener("scroll", () => {
+  const scrollY = window.scrollY;
+  if (scrollY > window.innerHeight * 0.3) {
+    forest.classList.add("fade-out");
+  } else {
+    forest.classList.remove("fade-out");
+  }
+});
+</script>
 
 </body>
 </html>
