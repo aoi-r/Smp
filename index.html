@@ -2,94 +2,68 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Layered Scroll Cards</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html, body { height:100%; font-family: "Poppins","Noto Sans JP",sans-serif; background:#fff7f7; color:#b23a6f; overflow-x:hidden; }
+body {
+  margin: 0;
+  height: 100vh;
+  overflow-x: hidden;
+  perspective: 300px;
+}
 
-  /* 背景アニメーション */
-  body::before {
-    content:"";
-    position:fixed; top:0; left:0;
-    width:100%; height:100%;
-    background: radial-gradient(circle at 25% 25%, #ffd6e8, transparent 70%),
-                radial-gradient(circle at 75% 75%, #ffe6ef, transparent 70%);
-    background-size: 200% 200%;
-    animation: bgMove 10s ease-in-out infinite alternate;
-    z-index:-1;
-  }
-  @keyframes bgMove { from {background-position:0% 0%;} to {background-position:100% 100%;} }
+.parallax {
+  position: relative;
+  height: 100vh;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
 
-  /* Welcome */
-  .welcome {
-    height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
-  }
-  .welcome h1 { font-size:3.5rem; animation: fadeIn 2s ease-in-out; }
-  @keyframes fadeIn { from {opacity:0; transform:translateY(30px);} to {opacity:1; transform:translateY(0);} }
+.parallax__layer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  transform-origin: bottom center;
+}
 
-  /* Scrollアイコン */
-  .scroll-icon {
-    position:absolute; bottom:50px; width:30px; height:50px;
-    border:2px solid #b23a6f; border-radius:25px; animation: bounce 2s infinite;
-  }
-  .scroll-icon::after {
-    content:""; display:block; width:6px; height:6px; background:#b23a6f; border-radius:50%; margin:8px auto;
-    animation: scrollDot 2s infinite;
-  }
-  @keyframes bounce {0%,100%{transform:translateY(0);}50%{transform:translateY(8px);}}
-  @keyframes scrollDot {0%{opacity:1; transform:translateY(0);}100%{opacity:0; transform:translateY(15px);}}
+.parallax__layer img {
+  width: 100%;
+  display: block;
+  position: absolute;
+  bottom: 0;
+}
 
-  /* レイヤーカード */
-  .card-layer {
-    position: absolute;
-    top: 100vh; /* Welcomeの下からスタート */
-    left:50%;
-    transform: translateX(-50%);
-    width:90%; max-width:500px;
-    background:#fffafc;
-    border-radius:20px;
-    box-shadow:0 8px 20px rgba(178,58,111,0.15);
-    padding:3rem 2rem;
-    text-align:center;
-    font-size:1.6rem;
-    opacity:0;
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-  .card-layer.show {
-    opacity:1;
-    transform: translateX(-50%) translateY(0);
-  }
+.parallax__cover {
+  background: #2D112B;
+  display: block;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 2000px;
+  z-index: 2;
+}
+
+/* --- Sassの出力を手動展開 --- */
+.parallax__layer__0 { transform: translateZ(-300px) scale(4); }
+.parallax__layer__1 { transform: translateZ(-250px) scale(3.5); }
+.parallax__layer__2 { transform: translateZ(-200px) scale(3); }
+.parallax__layer__3 { transform: translateZ(-150px) scale(2.5); }
+.parallax__layer__4 { transform: translateZ(-100px) scale(2); }
+.parallax__layer__5 { transform: translateZ(-50px) scale(1.5); }
+.parallax__layer__6 { transform: translateZ(0px) scale(1); }
 </style>
 </head>
 <body>
 
-<section class="welcome">
-  <h1>Welcome</h1>
-  <div class="scroll-icon"></div>
-</section>
-
-<!-- レイヤー式カード -->
-<div class="card-layer" style="top:120vh;">🌸 Card 1<br>春の香りを感じて</div>
-<div class="card-layer" style="top:180vh;">🌼 Card 2<br>明るく優しい午後</div>
-<div class="card-layer" style="top:240vh;">🍀 Card 3<br>新しい発見を求めて</div>
-<div class="card-layer" style="top:300vh;">🌈 Card 4<br>心をカラフルに</div>
-<div class="card-layer" style="top:360vh;">💎 Card 5<br>小さなきらめきを大切に</div>
-<div class="card-layer" style="top:420vh;">🌙 Card 6<br>やさしく夜に包まれて</div>
-
-<script>
-const cards = document.querySelectorAll(".card-layer");
-window.addEventListener("scroll", () => {
-  const scrollY = window.scrollY + window.innerHeight * 0.6; // カード表示トリガー
-  cards.forEach(card => {
-    if(scrollY > card.offsetTop) {
-      card.classList.add("show");
-    } else {
-      card.classList.remove("show");
-    }
-  });
-});
-</script>
+<div class="parallax">
+  <div class="parallax__layer parallax__layer__0"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_0.png?raw=true" /></div>
+  <div class="parallax__layer parallax__layer__1"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_1.png?raw=true" /></div>
+  <div class="parallax__layer parallax__layer__2"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_2.png?raw=true" /></div>
+  <div class="parallax__layer parallax__layer__3"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_3.png?raw=true" /></div>
+  <div class="parallax__layer parallax__layer__4"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_4.png?raw=true" /></div>
+  <div class="parallax__layer parallax__layer__5"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_5.png?raw=true" /></div>
+  <div class="parallax__layer parallax__layer__6"><img src="https://github.com/samdbeckham/blog/blob/master/dev/_assets/images/articles/firewatch/layer_6.png?raw=true" /></div>
+  <div class="parallax__cover"></div>
+</div>
 
 </body>
 </html>
