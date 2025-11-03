@@ -14,96 +14,60 @@
     height: 100vh;
     margin: 0;
   }
-
-  .container {
-    text-align: center;
-  }
-
-  h2 {
-    margin-bottom: 20px;
-    color: #333;
-  }
-
-  .pin-inputs {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
-
-  input[type="password"] {
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-    text-align: center;
+  .container { text-align: center; }
+  input {
+    font-size: 1.2rem;
+    padding: 10px;
     border: none;
     border-radius: 10px;
-    background: white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    width: 120px;
+    text-align: center;
   }
-
-  input[type="password"]:focus {
-    outline: 2px solid #ff99c8;
-  }
-
-  .message {
-    margin-top: 15px;
-    color: #e91e63;
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #ff99c8;
+    color: white;
     font-weight: bold;
   }
+  .msg { margin-top: 10px; color: #e91e63; font-weight: bold; }
 </style>
 </head>
 <body>
   <div class="container">
     <h2>パスコードを入力</h2>
-    <div class="pin-inputs">
-      <input type="password" maxlength="1" inputmode="numeric" />
-      <input type="password" maxlength="1" inputmode="numeric" />
-      <input type="password" maxlength="1" inputmode="numeric" />
-      <input type="password" maxlength="1" inputmode="numeric" />
-    </div>
-    <div class="message" id="msg"></div>
+    <input id="pin" type="password" maxlength="4" inputmode="numeric" />
+    <br />
+    <button id="checkBtn">送信</button>
+    <div class="msg" id="msg"></div>
   </div>
 
-  <script>
-    const inputs = document.querySelectorAll('.pin-inputs input');
-    const message = document.getElementById('msg');
-    const correctPin = "0121";
+<script>
+  const storedHash = "f48e2b7ef3c418ca6ac3b7b4b3d1ce5d62f2e5f8b66f511a29e984bf4166f35e"; // ← 0121 のSHA-256
+  const msg = document.getElementById("msg");
 
-    inputs.forEach((input, index) => {
-      input.addEventListener('input', () => {
-        if (input.value.length === 1 && index < inputs.length - 1) {
-          inputs[index + 1].focus();
-        }
-        checkPin();
-      });
+  async function sha256(text) {
+    const buffer = new TextEncoder().encode(text);
+    const hash = await crypto.subtle.digest("SHA-256", buffer);
+    return Array.from(new Uint8Array(hash))
+      .map(b => b.toString(16).padStart(2, '0')).join('');
+  }
 
-      input.addEventListener('keydown', (e) => {
-        if (e.key === "Backspace" && !input.value && index > 0) {
-          inputs[index - 1].focus();
-        }
-      });
-    });
+  document.getElementById("checkBtn").addEventListener("click", async () => {
+    const pin = document.getElementById("pin").value;
+    const enteredHash = await sha256(pin);
 
-    function checkPin() {
-      const enteredPin = Array.from(inputs).map(i => i.value).join('');
-      if (enteredPin.length === 4) {
-        if (enteredPin === correctPin) {
-          message.textContent = "認証成功！";
-          message.style.color = "green";
-          setTimeout(() => {
-            window.location.href = "success.html"; // ← 遷移先
-          }, 500);
-        } else {
-          message.textContent = "パスコードが違います";
-          message.style.color = "#e91e63";
-          inputs.forEach(i => i.value = '');
-          inputs[0].focus();
-        }
-      }
+    if (enteredHash === storedHash) {
+      msg.style.color = "green";
+      msg.textContent = "認証成功！";
+      setTimeout(() => location.href = "success.html", 500);
+    } else {
+      msg.style.color = "#e91e63";
+      msg.textContent = "パスコードが違います。";
     }
-
-    // 初期フォーカス
-    inputs[0].focus();
-  </script>
+  });
+</script>
 </body>
 </html>
