@@ -2,19 +2,54 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>Face ID / Touch ID 認証</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face ID 認証デモ</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #fff0f6; /* 初期は淡いピンク */
+      transition: background-color 0.5s ease;
+      font-family: sans-serif;
+    }
+    button {
+      background: #ff69b4;
+      color: white;
+      border: none;
+      padding: 1em 2em;
+      font-size: 1.2em;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #ff85c1;
+    }
+    #status {
+      margin-top: 2em;
+      font-size: 1.1em;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
   <h1>Face ID / Touch ID 認証</h1>
   <button id="authBtn">認証する</button>
+  <div id="status"></div>
 
   <script>
     document.getElementById('authBtn').addEventListener('click', async () => {
+      const status = document.getElementById('status');
+      status.textContent = "認証中...";
       if (!window.PublicKeyCredential) {
-        alert("このブラウザはWebAuthnに対応していません");
+        status.textContent = "このブラウザはWebAuthnに対応していません。";
         return;
       }
 
+      // ランダムチャレンジ（本来はサーバーが生成）
       const challenge = new Uint8Array(32);
       window.crypto.getRandomValues(challenge);
 
@@ -30,10 +65,11 @@
           }
         });
 
-        alert("認証成功！");
-        console.log(credential);
+        // 認証成功
+        status.textContent = "✅ 認証成功！コミット完了しました。";
+        document.body.style.backgroundColor = "#ffb6c1"; // 濃いピンクに変化
       } catch (err) {
-        alert("認証失敗: " + err);
+        status.textContent = "❌ 認証失敗: " + err;
       }
     });
   </script>
