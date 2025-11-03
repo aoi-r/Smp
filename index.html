@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>生体認証テスト</title>
+  <title>Face ID / Touch ID 認証</title>
 </head>
 <body>
   <h1>Face ID / Touch ID 認証</h1>
@@ -15,16 +15,23 @@
         return;
       }
 
+      const challenge = new Uint8Array(32);
+      window.crypto.getRandomValues(challenge);
+
       try {
-        const cred = await navigator.credentials.get({
+        const credential = await navigator.credentials.get({
           publicKey: {
-            challenge: new Uint8Array(32), // 本来はサーバーから送る値
-            allowCredentials: [],
-            timeout: 60000,
-            userVerification: "required"
+            challenge: challenge,
+            userVerification: "required",
+            authenticatorSelection: {
+              authenticatorAttachment: "platform" // ← 内蔵Face/Touch IDを指定
+            },
+            timeout: 60000
           }
         });
+
         alert("認証成功！");
+        console.log(credential);
       } catch (err) {
         alert("認証失敗: " + err);
       }
